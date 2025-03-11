@@ -157,6 +157,7 @@ import { useProductsStore } from '@/store/products';
 import { useCartStore } from '@/store/cart';
 import DOMPurify from 'dompurify';
 import ProductAddedPopup from "@/components/popups/ProductAddedPopup.vue";
+import type {Product} from "@/types";
 
 export default defineComponent({
   components: {ProductAddedPopup},
@@ -167,7 +168,7 @@ export default defineComponent({
     const productId = Number(route.params.id);
 
     const popupVisible = ref(false);
-    const addToCartObject = ref(null);
+    const addToCartObject = ref<{ product: Product; size?: string } | null>(null);
 
     onMounted(async () => {
       await productStore.fetchProduct(productId);
@@ -211,7 +212,7 @@ export default defineComponent({
           popupVisible.value = true;
           addToCartObject.value = {
             product: {...product.value},
-            size: selectedSize.value
+            size: selectedSize.value ?? undefined
           }
           setTimeout(() => {
             popupVisible.value = false;

@@ -22,7 +22,7 @@
             <ul>
               <li
                 v-for="item in items"
-                :key="item.id"
+                :key="item.product.id"
               >
                 {{ item.product.name }} <span v-if="item.size"> | Size: {{ item.size }}</span> (x{{ item.quantity }})
               </li>
@@ -30,7 +30,7 @@
           </div>
 
           <div class="total-price">
-            <p><strong>Total Price:</strong> € {{ totalAmount }}</p>
+            <p><strong>Total Price:</strong> € {{ totalAmount.toFixed(2) }}</p>
           </div>
         </div>
       </v-card-text>
@@ -68,10 +68,12 @@ export default defineComponent({
       type: Object as () => {
         orderNumber: string;
         items: {
-          id: number;
-          product: { name: string };
+          product: {
+            id: number;
+            name: string;
+          };
           quantity: number;
-          size?: string
+          size?: string | null;
         }[] ;
         totalAmount: number;
       },

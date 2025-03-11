@@ -38,7 +38,9 @@ export const useProductsStore = defineStore('products', {
         if (productIds && productIds.length > 0) {
           this.products = await fetchProducts({productIds});
         } else {
-          this.products = await fetchProducts();
+          this.products = await fetchProducts({
+            enabled:true
+          });
         }
       } catch (error) {
         console.log(error)

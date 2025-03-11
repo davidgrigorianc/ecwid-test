@@ -41,14 +41,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
-import { Product } from '@/types/product';
+import {defineComponent, computed, type PropType} from 'vue';
+import type { Product} from '@/types';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
   props: {
     product: {
-      type: Object as () => Product,
+      type: Object as PropType<Product>,
       required: true,
     },
     visible: Boolean,

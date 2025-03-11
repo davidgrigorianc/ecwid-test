@@ -129,9 +129,9 @@
       </v-col>
     </v-row>
     <OrderConfirmationPopup
-      v-if="order"
+      v-if="newOrder"
       :visible="orderConfirmed"
-      :order="order"
+      :order="newOrder"
       @update:visible="orderConfirmed = $event"
     />
   </v-container>
@@ -142,13 +142,24 @@ import { defineComponent, computed, ref } from 'vue';
 import { useCartStore } from '@/store/cart';
 import router from "@/router";
 import OrderConfirmationPopup from "@/components/popups/OrderConfirmationPopup.vue";
+import type {Product} from "@/types";
 
 export default defineComponent({
   components: {OrderConfirmationPopup},
   setup() {
     const cartStore = useCartStore();
     const cart = computed(() => cartStore.getCartItems);
-    const order = computed(() => cartStore.getOrder);
+    const newOrder =  ref(null as {
+      orderNumber: string;
+      orderDate: string;
+      estimatedDeliveryDate: string;
+      items: Array<{
+        product: Product;
+        quantity: number;
+        size: string | null;
+      }>;
+      totalAmount: number;
+    } | null)
     const orderConfirmed = ref(false)
 
     const itemsPerPage = 4;
@@ -175,8 +186,30 @@ export default defineComponent({
     };
 
     const placeOrder = () => {
-      cartStore.createOrder();
-      orderConfirmed.value = true
+      const orderNumber = `ORD${Math.floor(Math.random() * 100000000)}`;
+      const orderDate = new Date().toISOString().split('T')[0];
+      const estimatedDeliveryDate = new Date();
+      estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + 7);
+      const totalAmount = cart.value.reduce(
+        (sum, item) => sum + item.product.price * item.quantity,
+        0
+      );
+
+      newOrder.value = {
+        orderNumber,
+        orderDate,
+        estimatedDeliveryDate: estimatedDeliveryDate.toISOString().split('T')[0],
+        items: cart.value.map(item => ({
+          product: item.product,
+          quantity: item.quantity,
+          size: item.size,
+        })),
+        totalAmount,
+      };
+
+      orderConfirmed.value = true;
+
+      cartStore.clearCart()
     };
 
     const goHome = (): void => {
@@ -194,7 +227,7 @@ export default defineComponent({
       currentPage,
       totalPages,
       itemsPerPage,
-      order,
+      newOrder,
       orderConfirmed
     };
   },

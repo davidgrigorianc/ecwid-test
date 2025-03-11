@@ -7,29 +7,12 @@ export const useCartStore = defineStore('cart', {
       product: Product;
       size: string | null;
       quantity: number;
-    }>,
-    order: null as {
-      orderNumber: string;
-      orderDate: string;
-      estimatedDeliveryDate: string;
-      items: Array<{
-        product: Product;
-        quantity: number;
-        size: string | null;
-      }>;
-      totalAmount: number;
-    } | null,
+    }>
   }),
 
   getters: {
     getCartItems(state) {
       return state.cart;
-    },
-    getOrder(state) {
-      return state.order;
-    },
-    isOrderConfirmed(state) {
-      return state.orderConfirmed;
     },
   },
 
@@ -68,28 +51,9 @@ export const useCartStore = defineStore('cart', {
       }
     },
 
-    createOrder() {
-      const orderNumber = `ORD${Math.floor(Math.random() * 100000000)}`;
-      const orderDate = new Date().toISOString().split('T')[0];
-      const estimatedDeliveryDate = new Date();
-      estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + 7);
-      const totalAmount = this.cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-
-      this.order = {
-        orderNumber,
-        orderDate,
-        estimatedDeliveryDate: estimatedDeliveryDate.toISOString().split('T')[0],
-        items: this.cart.map(item => ({
-          product: item.product,
-          quantity: item.quantity,
-          size: item.size,
-        })),
-        totalAmount,
-      };
-
-      this.orderConfirmed = true;
-      this.cart = [];
+    clearCart(){
+      this.cart = []
       this.saveCart();
-    },
+    }
   },
 });
